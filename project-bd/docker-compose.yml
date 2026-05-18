@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # 1. El motor de la base de datos
+  db:
+    image: postgres:15
+    container_name: hotel_db_container
+    environment:
+      POSTGRES_DB: hotel_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. El automatizador de tablas (Liquibase)
+  liquibase:
+    image: liquibase/liquibase:4.20
+    container_name: hotel_liquibase_container
+    volumes:
+      - .:/liquibase/changelog
+    command: >
+      --changeLogFile=/liquibase/changelog/changelog-master.xml
+      --url=jdbc:postgresql://db:5432/hotel_db
+      --username=admin
+      --password=password123
+      --log-level=info
+      update
+    depends_on:
+      - db
+
+# 3. Definición de volúmenes para persistencia
+volumes:
+  postgres_data:  # Esto mapea TODO el projecto al contenedor, puedes ajustar esto si solo quieres mapear la carpeta de changelogs

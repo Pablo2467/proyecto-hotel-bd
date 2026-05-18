@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <!-- 1. CREACIÓN DE TODAS LAS TABLAS (DDL) -->
+    <include file="../ddl/01-create-roles.sql" relativeToChangelogFile="true"/>
+    <include file="../ddl/02-create-estados.sql" relativeToChangelogFile="true"/>
+    <include file="../ddl/03-create-tipos.sql" relativeToChangelogFile="true"/>
+    <include file="../ddl/04-create-usuarios.sql" relativeToChangelogFile="true"/>
+    <include file="../ddl/05-create-habitaciones.sql" relativeToChangelogFile="true"/>
+    <include file="../ddl/06-create-reservas.sql" relativeToChangelogFile="true"/>
+    <include file="../ddl/07-create-asignaciones-limpieza.sql" relativeToChangelogFile="true"/>
+    <include file="../ddl/08-create-auditoria-estados.sql" relativeToChangelogFile="true"/>
+
+    <!-- 2. INSERCIÓN DE DATOS MAESTROS (DML CANONICAL) -->
+    <include file="../dml/canonical/01-insert-roles.sql" relativeToChangelogFile="true"/>
+    <include file="../dml/canonical/02-insert-estados.sql" relativeToChangelogFile="true"/>
+    <include file="../dml/canonical/03-insert-tipos.sql" relativeToChangelogFile="true"/>
+
+    <!-- 3. DATOS DE PRUEBA (DML VOLUMETRIC) -->
+    <include file="../dml/01-insert-test-data.sql" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

@@ -1,0 +1,4 @@
+CREATE TABLE roles (
+    id INT PRIMARY KEY,
+    nombre_rol VARCHAR(50) NOT NULL UNIQUE
+);
