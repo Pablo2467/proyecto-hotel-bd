@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <changeSet id="18" author="equipo">
+
+        <!-- FUNCTION 1 (Integrante 1): Calcula el total pendiente de una estadía -->
+        <sql splitStatements="false"><![CDATA[
+CREATE OR REPLACE FUNCTION fn_total_pendiente_estadia(p_estadia_id INT)
+RETURNS DECIMAL(12,2)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_total_hospedaje DECIMAL(12,2);
+    v_total_consumos DECIMAL(12,2);
+    v_total_pagado DECIMAL(12,2);
+    v_pendiente DECIMAL(12,2);
+BEGIN
+    SELECT COALESCE(total_hospedaje, 0) INTO v_total_hospedaje
+    FROM estadias WHERE id = p_estadia_id;
+
+    SELECT COALESCE(SUM(subtotal), 0) INTO v_total_consumos
+    FROM consumos WHERE estadia_id = p_estadia_id;
+
+    SELECT COALESCE(SUM(monto), 0) INTO v_total_pagado
+    FROM pagos WHERE estadia_id = p_estadia_id;
+
+    v_pendiente := (v_total_hospedaje + v_total_consumos) - v_total_pagado;
+
+    RETURN v_pendiente;
+END;
+$$;
+        ]]></sql>
+
+        <!-- FUNCTION 2 (Integrante 2): Retorna disponibilidad de habitaciones por tipo -->
+        <sql splitStatements="false"><![CDATA[
+CREATE OR REPLACE FUNCTION fn_habitaciones_disponibles(p_tipo_id INT DEFAULT NULL)
+RETURNS TABLE(
+    id INT,
+    numero_habitacion VARCHAR,
+    tipo VARCHAR,
+    piso INT,
+    precio_noche DECIMAL
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        h.id,
+        h.numero_habitacion,
+        t.nombre_tipo,
+        h.piso,
+        t.precio_noche
+    FROM habitaciones h
+    JOIN tipos_habitacion t ON h.tipo_id = t.id
+    JOIN estados_habitacion e ON h.estado_id = e.id
+    WHERE e.nombre_estado = 'disponible'
+    AND (p_tipo_id IS NULL OR h.tipo_id = p_tipo_id)
+    ORDER BY h.piso, h.numero_habitacion;
+END;
+$$;
+        ]]></sql>
+
+        <rollback>
+            <sql splitStatements="false"><![CDATA[
+DROP FUNCTION IF EXISTS fn_habitaciones_disponibles(INT);
+DROP FUNCTION IF EXISTS fn_total_pendiente_estadia(INT);
+            ]]></sql>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>
