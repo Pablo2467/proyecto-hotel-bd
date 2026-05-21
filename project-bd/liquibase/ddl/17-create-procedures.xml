@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <changeSet id="17" author="equipo">
+
+        <!-- PROCEDURE 1 (Integrante 1): Registrar check-in -->
+        <sql splitStatements="false"><![CDATA[
+CREATE OR REPLACE PROCEDURE sp_realizar_checkin(
+    p_reserva_id INT,
+    p_huesped_id INT
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_habitacion_id INT;
+    v_estado_ocupada INT;
+    v_estado_disponible INT;
+BEGIN
+    SELECT habitacion_id INTO v_habitacion_id
+    FROM reservas WHERE id = p_reserva_id;
+
+    SELECT id INTO v_estado_disponible
+    FROM estados_habitacion WHERE nombre_estado = 'disponible';
+
+    SELECT id INTO v_estado_ocupada
+    FROM estados_habitacion WHERE nombre_estado = 'ocupada';
+
+    IF NOT EXISTS (SELECT 1 FROM reservas WHERE id = p_reserva_id AND estado = 'confirmada') THEN
+        RAISE EXCEPTION 'La reserva % no está confirmada', p_reserva_id;
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM habitaciones WHERE id = v_habitacion_id AND estado_id = v_estado_disponible) THEN
+        RAISE EXCEPTION 'La habitación no está disponible para check-in';
+    END IF;
+
+    INSERT INTO estadias (reserva_id, huesped_id, habitacion_id, fecha_checkin, estado)
+    VALUES (p_reserva_id, p_huesped_id, v_habitacion_id, CURRENT_TIMESTAMP, 'activa');
+
+    UPDATE habitaciones SET estado_id = v_estado_ocupada WHERE id = v_habitacion_id;
+
+    UPDATE reservas SET estado = 'finalizada' WHERE id = p_reserva_id;
+
+    INSERT INTO auditoria_estados (habitacion_id, estado_anterior_id, estado_nuevo_id)
+    VALUES (v_habitacion_id, v_estado_disponible, v_estado_ocupada);
+
+END;
+$$;
+        ]]></sql>
+
+        <!-- PROCEDURE 2 (Integrante 2): Registrar pago de estadía -->
+        <sql splitStatements="false"><![CDATA[
+CREATE OR REPLACE PROCEDURE sp_registrar_pago(
+    p_estadia_id INT,
+    p_metodo_pago_id INT,
+    p_monto DECIMAL(12,2),
+    p_usuario_id INT,
+    p_observacion TEXT DEFAULT NULL
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM estadias WHERE id = p_estadia_id) THEN
+        RAISE EXCEPTION 'La estadía % no existe', p_estadia_id;
+    END IF;
+
+    IF p_monto <= 0 THEN
+        RAISE EXCEPTION 'El monto debe ser mayor a cero';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM metodos_pago WHERE id = p_metodo_pago_id) THEN
+        RAISE EXCEPTION 'Método de pago % no existe', p_metodo_pago_id;
+    END IF;
+
+    INSERT INTO pagos (estadia_id, metodo_pago_id, monto, fecha_pago, observacion, usuario_id)
+    VALUES (p_estadia_id, p_metodo_pago_id, p_monto, CURRENT_TIMESTAMP, p_observacion, p_usuario_id);
+
+END;
+$$;
+        ]]></sql>
+
+        <rollback>
+            <sql splitStatements="false"><![CDATA[
+DROP PROCEDURE IF EXISTS sp_registrar_pago(INT, INT, DECIMAL, INT, TEXT);
+DROP PROCEDURE IF EXISTS sp_realizar_checkin(INT, INT);
+            ]]></sql>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

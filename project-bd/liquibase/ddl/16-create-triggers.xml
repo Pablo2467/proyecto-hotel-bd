@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <changeSet id="16" author="equipo">
+
+        <sql splitStatements="false"><![CDATA[
+CREATE OR REPLACE FUNCTION fn_trigger_checkout_habitacion()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.estado = 'finalizada' AND OLD.estado = 'activa' THEN
+        UPDATE habitaciones
+        SET estado_id = (SELECT id FROM estados_habitacion WHERE nombre_estado = 'en_limpieza')
+        WHERE id = NEW.habitacion_id;
+
+        INSERT INTO auditoria_estados (habitacion_id, estado_anterior_id, estado_nuevo_id, usuario_id)
+        VALUES (
+            NEW.habitacion_id,
+            (SELECT id FROM estados_habitacion WHERE nombre_estado = 'ocupada'),
+            (SELECT id FROM estados_habitacion WHERE nombre_estado = 'en_limpieza'),
+            NULL
+        );
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+        ]]></sql>
+
+        <sql splitStatements="false"><![CDATA[
+CREATE TRIGGER trg_checkout_habitacion
+AFTER UPDATE ON estadias
+FOR EACH ROW
+EXECUTE FUNCTION fn_trigger_checkout_habitacion();
+        ]]></sql>
+
+        <sql splitStatements="false"><![CDATA[
+CREATE OR REPLACE FUNCTION fn_trigger_descuento_stock()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE productos
+    SET stock = stock - NEW.cantidad
+    WHERE id = NEW.producto_id;
+
+    IF (SELECT stock FROM productos WHERE id = NEW.producto_id) < 0 THEN
+        RAISE EXCEPTION 'Stock insuficiente para el producto id %', NEW.producto_id;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+        ]]></sql>
+
+        <sql splitStatements="false"><![CDATA[
+CREATE TRIGGER trg_descuento_stock
+AFTER INSERT ON consumos
+FOR EACH ROW
+EXECUTE FUNCTION fn_trigger_descuento_stock();
+        ]]></sql>
+
+        <rollback>
+            <sql splitStatements="false"><![CDATA[
+DROP TRIGGER IF EXISTS trg_descuento_stock ON consumos;
+DROP FUNCTION IF EXISTS fn_trigger_descuento_stock();
+DROP TRIGGER IF EXISTS trg_checkout_habitacion ON estadias;
+DROP FUNCTION IF EXISTS fn_trigger_checkout_habitacion();
+            ]]></sql>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>
