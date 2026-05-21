@@ -144,4 +144,5 @@ INSERT INTO pagos (estadia_id, metodo_pago_id, monto, fecha_pago, observacion, u
 (18, 3, 1470000.00, '2026-05-05 11:00:00', 'Debito', 2);
 
 
+
 --rollback DELETE FROM pagos; DELETE FROM consumos; DELETE FROM estadias; DELETE FROM reservas; DELETE FROM huespedes; DELETE FROM habitaciones; DELETE FROM usuarios;
