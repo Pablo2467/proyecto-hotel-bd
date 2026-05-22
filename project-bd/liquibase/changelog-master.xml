@@ -25,6 +25,7 @@
     <!-- 2. TRIGGERS -->
     <include file="ddl/16-create-triggers.xml" relativeToChangelogFile="true"/>
 
+<<<<<<< HEAD
     <!-- 3. STORED PROCEDURES -->
     <include file="ddl/17-create-procedures.xml" relativeToChangelogFile="true"/>
 
@@ -41,5 +42,10 @@
     <!-- 6. DATOS DE PRUEBA (DML VOLUMETRIC) -->
     <include file="dml/volumetric/01-insert-test-data.sql" relativeToChangelogFile="true"/>
     <include file="dml/volumetric/02-insert-volumetric-data.sql" relativeToChangelogFile="true"/>
+=======
+    <!-- 3. DATOS DE PRUEBA (DML VOLUMETRIC) -->
+    <include file="../dml/01-insert-test-data.sql" relativeToChangelogFile="true"/>
+    
+>>>>>>> 8ead069faae8b2594c850834f593a1437ec1e3ed
 
 </databaseChangeLog>
