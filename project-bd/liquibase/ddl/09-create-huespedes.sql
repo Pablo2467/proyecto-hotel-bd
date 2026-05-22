@@ -1,3 +1,6 @@
+--liquibase formatted sql
+
+--changeset equipo:9
 CREATE TABLE huespedes (
     id SERIAL PRIMARY KEY,
     nombre_completo VARCHAR(100) NOT NULL,
@@ -7,4 +10,5 @@ CREATE TABLE huespedes (
     telefono VARCHAR(20),
     nacionalidad VARCHAR(50),
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-); 
+);
+--rollback DROP TABLE huespedes;

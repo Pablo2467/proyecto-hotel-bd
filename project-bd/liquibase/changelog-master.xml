@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
     <!-- 1. CREACIÓN DE TODAS LAS TABLAS (DDL) -->
-    <include file="../ddl/01-create-roles.sql" relativeToChangelogFile="true"/>
-    <include file="../ddl/02-create-estados.sql" relativeToChangelogFile="true"/>
-    <include file="../ddl/03-create-tipos.sql" relativeToChangelogFile="true"/>
-    <include file="../ddl/04-create-usuarios.sql" relativeToChangelogFile="true"/>
-    <include file="../ddl/05-create-habitaciones.sql" relativeToChangelogFile="true"/>
-    <include file="../ddl/06-create-reservas.sql" relativeToChangelogFile="true"/>
-    <include file="../ddl/07-create-asignaciones-limpieza.sql" relativeToChangelogFile="true"/>
-    <include file="../ddl/08-create-auditoria-estados.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/01-create-roles.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/02-create-estados.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/03-create-tipos.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/04-create-usuarios.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/05-create-habitaciones.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/06-create-reservas.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/07-create-asignaciones-limpieza.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/08-create-auditoria-estados.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/09-create-huespedes.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/10-create-estadias.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/11-create-productos.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/12-create-consumos.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/13-create-metodos-pago.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/14-create-pagos.sql" relativeToChangelogFile="true"/>
+    <include file="ddl/15-alter-reservas-estado.sql" relativeToChangelogFile="true"/>
 
-    <!-- 2. INSERCIÓN DE DATOS MAESTROS (DML CANONICAL) -->
-    <include file="../dml/canonical/01-insert-roles.sql" relativeToChangelogFile="true"/>
-    <include file="../dml/canonical/02-insert-estados.sql" relativeToChangelogFile="true"/>
-    <include file="../dml/canonical/03-insert-tipos.sql" relativeToChangelogFile="true"/>
+    <!-- 2. TRIGGERS -->
+    <include file="ddl/16-create-triggers.xml" relativeToChangelogFile="true"/>
 
-    <!-- 3. DATOS DE PRUEBA (DML VOLUMETRIC) -->
-    <include file="../dml/01-insert-test-data.sql" relativeToChangelogFile="true"/>
+    <!-- 3. STORED PROCEDURES -->
+    <include file="ddl/17-create-procedures.xml" relativeToChangelogFile="true"/>
+
+    <!-- 4. FUNCTIONS -->
+    <include file="ddl/18-create-functions.xml" relativeToChangelogFile="true"/>
+
+    <!-- 5. INSERCIÓN DE DATOS MAESTROS (DML CANONICAL) -->
+    <include file="dml/canonical/01-insert-roles.sql" relativeToChangelogFile="true"/>
+    <include file="dml/canonical/02-insert-estados.sql" relativeToChangelogFile="true"/>
+    <include file="dml/canonical/03-insert-tipos.sql" relativeToChangelogFile="true"/>
+    <include file="dml/canonical/04-insert-metodos-pago.sql" relativeToChangelogFile="true"/>
+    <include file="dml/canonical/05-insert-productos.sql" relativeToChangelogFile="true"/>
+
+    <!-- 6. DATOS DE PRUEBA (DML VOLUMETRIC) -->
+    <include file="dml/volumetric/01-insert-test-data.sql" relativeToChangelogFile="true"/>
+    <include file="dml/volumetric/02-insert-volumetric-data.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

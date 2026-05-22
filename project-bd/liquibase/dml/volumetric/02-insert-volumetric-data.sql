@@ -122,7 +122,7 @@ INSERT INTO consumos (estadia_id, producto_id, cantidad, precio_unitario, fecha_
 (18, 4, 5, 18000.00, '2026-05-02 08:00:00', 7),
 (18, 5, 4, 25000.00, '2026-05-03 13:00:00', 7);
 
--- PAGOS (20 registros)
+-- PAGOS (18 registros)
 INSERT INTO pagos (estadia_id, metodo_pago_id, monto, fecha_pago, observacion, usuario_id) VALUES
 (1, 1, 247000.00, '2026-01-13 11:00:00', 'Pago total en efectivo', 2),
 (2, 2, 465000.00, '2026-01-15 11:00:00', 'Pago con tarjeta credito', 2),

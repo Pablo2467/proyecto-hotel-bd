@@ -1,9 +1,9 @@
 --liquibase formatted sql
 
 --changeset equipo:101
-INSERT INTO roles (nombre_rol) VALUES ('administrador');
-INSERT INTO roles (nombre_rol) VALUES ('recepcionista');
-INSERT INTO roles (nombre_rol) VALUES ('housekeeping');
-INSERT INTO roles (nombre_rol) VALUES ('restaurante');
-INSERT INTO roles (nombre_rol) VALUES ('auditor');
+INSERT INTO roles (id, nombre_rol) VALUES (1, 'administrador');
+INSERT INTO roles (id, nombre_rol) VALUES (2, 'recepcionista');
+INSERT INTO roles (id, nombre_rol) VALUES (3, 'housekeeping');
+INSERT INTO roles (id, nombre_rol) VALUES (4, 'restaurante');
+INSERT INTO roles (id, nombre_rol) VALUES (5, 'auditor');
 --rollback DELETE FROM roles;

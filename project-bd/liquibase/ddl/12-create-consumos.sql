@@ -1,3 +1,6 @@
+--liquibase formatted sql
+
+--changeset equipo:12
 CREATE TABLE consumos (
     id SERIAL PRIMARY KEY,
     estadia_id INT NOT NULL REFERENCES estadias(id),
@@ -5,5 +8,7 @@ CREATE TABLE consumos (
     cantidad INT NOT NULL DEFAULT 1,
     precio_unitario NUMERIC(10,2) NOT NULL,
     fecha_consumo TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    observaciones TEXT
+    observaciones TEXT,
+    usuario_id INT NOT NULL REFERENCES usuarios(id)
 );
+--rollback DROP TABLE consumos;
